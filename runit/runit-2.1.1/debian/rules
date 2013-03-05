@@ -59,8 +59,6 @@ clean: deb-checkdir deb-checkuid
 
 install: deb-checkdir deb-checkuid build-stamp
 	rm -rf '$(DIR)'
-	install -d -m0755 '$(DIR)'/etc/service
-	install -d -m0755 '$(DIR)'/var/lib/supervise
 	install -d -m0755 '$(DIR)'/sbin
 	install -d -m0755 '$(DIR)'/usr/bin
 	install -d -m0755 '$(DIR)'/usr/sbin
@@ -75,15 +73,6 @@ install: deb-checkdir deb-checkuid build-stamp
 	done
 	$(STRIP) -R .comment -R .note '$(DIR)'/sbin/* '$(DIR)'/usr/sbin/* \
 	  '$(DIR)'/usr/bin/*
-	# runsvdir-start to be used from /etc/inittab
-	install -m0755 debian/2 '$(DIR)'/usr/sbin/runsvdir-start
-	# update-service
-	install -m0755 debian/update-service '$(DIR)'/usr/sbin/update-service
-	# getty-5 service
-	install -d -m0755 '$(DIR)'/etc/sv/getty-5
-	install -m0755 debian/getty-tty5.run '$(DIR)'/etc/sv/getty-5/run
-	install -m0755 debian/getty-tty5.finish \
-	  '$(DIR)'/etc/sv/getty-5/finish
 	# lintian overrides
 	install -m0755 -d '$(DIR)'/usr/share/lintian/overrides
 	install -m0644 debian/runit.lintian \
@@ -95,11 +84,7 @@ install: deb-checkdir deb-checkuid build-stamp
 	  install -m0644 runit/man/$$i.8 \
 	    '$(DIR)'/usr/share/man/man8/ || exit 1; \
 	done
-	install -m0644 debian/runsvdir-start.8 '$(DIR)'/usr/share/man/man8/
-	install -m0644 debian/update-service.8 '$(DIR)'/usr/share/man/man8/
 	gzip -9 '$(DIR)'/usr/share/man/man8/*.8
-	# links
-	ln -s /var/run/sv.getty-5 '$(DIR)'/etc/sv/getty-5/supervise
 	# additional docs
 	install -d -m0755 '$(DIR)'/usr/share/doc/runit/debian
 	for i in 1 2 3 ctrlaltdel; do \
@@ -108,11 +93,6 @@ install: deb-checkdir deb-checkuid build-stamp
 	done
 	# changelog
 	rm -f changelog && ln -s runit/package/CHANGES changelog
-	# upstart file
-	install -D -m0644 debian/runsvdir.upstart \
-	  '$(DIR)'/etc/event.d/runsvdir || exit 1;
-	install -D -m0644 debian/runsvdir.upstart \
-	  '$(DIR)'/etc/init/runsvdir.conf || exit 1;
 
 binary-indep:
 

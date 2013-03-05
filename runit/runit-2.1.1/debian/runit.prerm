@@ -1,6 +1,0 @@
-#!/bin/sh
-set -e
-
-if [ -x /sbin/stop ]; then
-  /sbin/stop runsvdir || true
-fi
