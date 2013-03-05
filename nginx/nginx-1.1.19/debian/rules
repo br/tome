@@ -244,10 +244,6 @@ binary-indep: install
 	dh_installchangelogs -i -k CHANGES
 	dh_installdocs -i
 	dh_installexamples -i
-	dh_installinit -r --no-start -i --init-script=nginx
-	cp debian/logrotate debian/nginx-common/etc/logrotate.d/nginx
-	mkdir -p debian/nginx-common/lib/systemd/system
-	cp debian/nginx-common.service debian/nginx-common/lib/systemd/system/nginx.service
 	dh_link -i
 	dh_compress -i
 	dh_fixperms -i
