@@ -1,1 +1,9 @@
 /runit-2.1.1/runit-2.1.1/
+/runit-2.1.1/build-stamp
+/runit-2.1.1/changelog
+/runit-2.1.1/conf-cc{orig}
+/runit-2.1.1/conf-ld{orig}
+/runit-2.1.1/debian/files
+/runit-2.1.1/debian/runit/
+/runit-2.1.1/patch-stamp
+/runit-2.1.1/runit
