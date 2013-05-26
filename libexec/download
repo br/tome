@@ -1,0 +1,46 @@
+#!/bin/bash
+
+#/ NAME
+#/     download -- download a deb package and unpack
+#/
+#/ SYNOPSIS
+#/     download PACKAGE
+
+# figure out the project root under which bin, lib live
+shome="$(cd -P -- "$(dirname -- "$BASH_SOURCE")/.." && pwd -P)"
+
+# load a jason bourne library
+source "$shome/libexec/_jason"
+
+function main {
+  case "$#" in
+    0)
+      logger_fatal "missing package name"
+      exit 1
+      ;;
+    1)
+      true
+      ;;
+    *)
+      logger_fatal "too many arguments"
+      exit 1
+      ;;
+  esac
+
+  local nm_package="$1"; shift
+
+  local tmp_download="$(mktemp -d -t XXXXXXXXX)"
+  pushd $tmp_download
+  aptitude download "$nm_package"
+  local pth_package="$tmp_download/$(set +f; echo *.deb)"
+  ar -xv "$pth_package"
+  for a in data control; do 
+    mkdir $a
+    tar xvfz $a.tar.gz -C $a
+    rm -f $a.tar.gz
+  done
+  popd
+  mv "$tmp_download" "$shome/packages/$nm_package"
+}
+
+require sub "$BASH_SOURCE" "$@"
