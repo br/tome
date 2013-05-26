@@ -2,3 +2,4 @@
 remotes:
   primary: git@github.com:destructuring/tome
   secondary: git@bitbucket.org:destructuring/tome
+  sh: git@github.com:destructuring/jason
