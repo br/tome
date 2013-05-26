@@ -1,0 +1,39 @@
+#!/bin/bash
+
+#/ NAME
+#/     assemble -- combine extracted deb file back into a package
+#/
+#/ SYNOPSIS
+#/     assemble DEB
+
+# figure out the project root under which bin, lib live
+shome="$(cd -P -- "$(dirname -- "$BASH_SOURCE")/.." && pwd -P)"
+
+# load a jason bourne library
+source "$shome/libexec/_jason"
+
+function main {
+  case "$#" in
+    0)
+      logger_fatal "missing deb filename"
+      exit 1
+      ;;
+    1)
+      true
+      ;;
+    *)
+      logger_fatal "too many arguments"
+      exit 1
+      ;;
+  esac
+
+  local pth_deb="$1"; shift
+
+  tar cvfz data.tar.gz    -C data    .
+  tar cvfz control.tar.gz -C control .
+  rm -f "$pth_deb"
+  ar -crv "$pth_deb" debian-binary control.tar.gz data.tar.gz
+  rm -rf data.tar.gz control.tar.gz
+}
+
+require sub "$BASH_SOURCE" "$@"
