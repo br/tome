@@ -14,10 +14,6 @@ source "$shome/libexec/_jason"
 
 function main {
   case "$#" in
-    0)
-      logger_fatal "missing distro name"
-      exit 1
-      ;;
     *)
       true
       ;;
