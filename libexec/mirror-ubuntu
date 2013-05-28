@@ -26,7 +26,14 @@ function main {
   local url_ubuntu="rsync://archive.ubuntu.com/ubuntu"
   
   # main mirror except for debugging trace, symlink ubuntu, and very large pool, dists
-  rsync -iaO --delete --exclude mirror --exclude trace --exclude ubuntu --exclude pool --exclude dists $url_ubuntu/. .
+  # TODO what is indices?
+  rsync -iaO --delete --exclude mirror --exclude trace --exclude ubuntu --exclude pool --exclude dists --exclude indices --exclude 'ls-lR.gz' $url_ubuntu/. .
+
+  # mirror already installed packages
+  rsync -iaO \
+    --include '*/' \
+    $({ dpkg -l 2>&- | grep ^i | awk '{print $2}'; find pool -type f  -name '*.deb' | cut -d/ -f7 | cut -d_ -f1; } | sort -u | while read -r p; do echo --include "${p}_*.deb"; done) \
+    --exclude '*' $url_ubuntu/pool/. pool/
 
   # mirror interesting distributions
   for nm_distro in "$@"; do
@@ -35,12 +42,6 @@ function main {
       rsync -iaO --delete --exclude 'installer-*' $url_ubuntu/$pth_dist/. $pth_dist/
     done
   done
-
-  # mirror already installed packages
-  rsync -iaO \
-    --include '*/' \
-    $({ dpkg -l 2>&- | grep ^i | awk '{print $2}'; find pool -type f  -name '*.deb' | cut -d/ -f4; } | sort -u | while read -r p; do echo --include "${p}_*"; done) \
-    --exclude '*' $url_ubuntu/pool/. pool/
 }
 
 require sub "$BASH_SOURCE" "$@"
