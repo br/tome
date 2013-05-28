@@ -1,2 +1,6 @@
 /packages
 /vault
+/apt/conf/updates
+/apt/db/
+/apt/dists/
+/apt/pool/

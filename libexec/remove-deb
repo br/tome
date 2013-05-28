@@ -1,0 +1,36 @@
+#!/bin/bash
+
+#/ NAME
+#/     remove -deb -- Removes a package from reprepro
+#/
+#/ SYNOPSIS
+#/     remove deb DISTRO PACKAGE
+
+# figure out the project root under which bin, lib live
+shome="$(cd -P -- "$(dirname -- "$BASH_SOURCE")/.." && pwd -P)"
+
+# load a jason bourne library
+source "$shome/libexec/_jason"
+
+function main {
+  case "$#" in
+    0)
+      logger_fatal "missing DISTRO, PACKAGE"
+      exit 1
+      ;;
+    1)
+      logger_fatal "missing PACKAGE"
+      exit 1
+      ;;
+    *)
+      true
+      ;;
+  esac
+
+  local nm_distro="$1"; shift
+
+  cd $shome/apt
+  reprepro -Vb . remove "$nm_distro" "$@"
+}
+
+require sub "$BASH_SOURCE" "$@"

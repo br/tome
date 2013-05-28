@@ -1,0 +1,17 @@
+Origin: Tome
+Label: Tome Raring
+Suite: stable
+Codename: raring
+Version: 13.04
+Architectures: i386 amd64
+Components: tome
+Description: Ubuntu packages with configuration, scripts removed
+
+Origin: Tome
+Label: Tome Precise
+Suite: stable
+Codename: precise
+Version: 12.04
+Architectures: i386 amd64
+Components: tome
+Description: Ubuntu packages with configuration, scripts removed
