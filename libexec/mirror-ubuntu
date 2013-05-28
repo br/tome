@@ -1,0 +1,50 @@
+#!/bin/bash
+
+#/ NAME
+#/     mirror-ubuntu -- mirror an ubuntu apt repo
+#/
+#/ SYNOPSIS
+#/     mirror ubuntu DISTROS
+
+# figure out the project root under which bin, lib live
+shome="$(cd -P -- "$(dirname -- "$BASH_SOURCE")/.." && pwd -P)"
+
+# load a jason bourne library
+source "$shome/libexec/_jason"
+
+function main {
+  case "$#" in
+    0)
+      logger_fatal "missing distro name"
+      exit 1
+      ;;
+    *)
+      true
+      ;;
+  esac
+
+  cd $shome/vault/ubuntu
+
+  mkdir -p {dists,pool}
+
+  local url_ubuntu="rsync://archive.ubuntu.com/ubuntu"
+  
+  # main mirror except for debugging trace, symlink ubuntu, and very large pool, dists
+  rsync -iaO --delete --exclude mirror --exclude trace --exclude ubuntu --exclude pool --exclude dists $url_ubuntu/. .
+
+  # mirror interesting distributions
+  for nm_distro in "$@"; do
+    for pth_dist in dists/$nm_distro{,-{backports,security,updates}}; do
+      # skip installer, not relevant for aptitude or debootstrap
+      rsync -iaO --delete --exclude 'installer-*' $url_ubuntu/$pth_dist/. $pth_dist/
+    done
+  done
+
+  # mirror already installed packages
+  rsync -iaO \
+    --include '*/' \
+    $({ dpkg -l 2>&- | grep ^i | awk '{print $2}'; find pool -type f  -name '*.deb' | cut -d/ -f4; } | sort -u | while read -r p; do echo --include "${p}_*"; done) \
+    --exclude '*' $url_ubuntu/pool/. pool/
+}
+
+require sub "$BASH_SOURCE" "$@"
